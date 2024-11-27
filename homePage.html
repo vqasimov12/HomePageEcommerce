@@ -1,14 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <title>Document</title>
-</head>
-<body>
-    
+  </head>
+  <body class="flex items-center justify-center flex-col w-full h-screen">
+    <section id="navbar" class="flex items-center justify-center w-full h-[80px] relative">
+      
+      <div class="flex justify-between items-center w-[85%] bg-[#ffff] top-8 fixed z-[5] h-[70px] border-0 border-b-[1px] border-solid border-lightgray-400">
+       
+        <h1 class="font-inter text-2xl font-bold leading-[24px] tracking-[0.03em] text-left decoration-none decoration-from-font">
+          Exclusive
+        </h1>
+       
+        <div
+          class="flex items-center justify-between w-fit h-fit gap-5 relative">
+          <div class="flex w-[200px] items-center h-[38px] relative pt-[7px] pr-[12px] pb-[7px] pl-[20px] gap-[10px] rounded-[4px] bg-[#f5f5f5]">
+            <input type="text" placeholder="What are you looking for?" class="font-poppins text-[12px] font-normal leading-[18px] bg-transparent text-left decoration-from-font border-0 outline-0" />
+            <i class="fa-solid fa-magnifying-glass h-[16px] w-[16px] absolute right-3"></i>
+          </div>
+
+          <!-- shopping cart link -->
+          <a href=""
+            ><img
+              src="./assets/images/shoppingCart.png"
+              alt=""
+              class="h-[32px] w-[32px]"
+          /></a>
+          <img id="profileBtn" src="./assets/images/user.png" alt="" class="h-[32px] w-[32px] cursor-pointer"/>
+          <div id="profileOptions" class="flex flex-col items-center gap-4 justify-center bg-[#f5f5f5] w-[225px] h-[110px] absolute z-6 bottom-[-115px] right-0">
+            <div class="flex items-center pl-5 w-full gap-[20px]">
+              <img class="h-8 w-8" src="./assets/images/user.png" alt="">
+              <p class="font-poppins text-[14px] text-center ">Manage My Account</p>
+            </div>
+            <div class="flex items-center pl-5 w-full gap-[20px]">
+              <img class="h-8 w-8" src="./assets/images/logout.png" alt="">
+              <p class="font-poppins text-[14px] text-center ">Manage My Account</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <script src="./homePage.js"></script>
-</body>
+  </body>
 </html>
