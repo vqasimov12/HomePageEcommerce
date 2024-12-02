@@ -122,6 +122,8 @@ function updateProducts(data) {
   });
 }
 
+$("#viewMoreBtn").click(() => getProducts());
+
 $("#profileBtn").click((event) => {
   const profileOptions = $("#profileOptions");
 
@@ -155,6 +157,8 @@ $("#searchInput").on("keydown", async function (event) {
       $("#searchedText").text(searchTerm);
       $("#overLay").removeClass("hidden").fadeIn(200);
       $("#body").addClass("overflow-hidden");
+      $("#more").addClass("hidden");
+
       const result = await searchProducts(searchTerm);
       $("#searchProducts").html("");
       if (result.length !== 0) {
@@ -173,11 +177,19 @@ $("#searchInput").on("keydown", async function (event) {
   }
 });
 
+$("#searchInput").on("input",  ()=> {
+  elementCount=8;
+})
+
+let elementCount = 8;
+
 $("#overLay").click((event) => {
   if (event.target === event.currentTarget) {
     $("#overLay").fadeOut(200, function () {
       $(this).addClass("hidden");
       $("#body").removeClass("overflow-hidden");
+      $("#searchInput").val(""); 
+      elementCount=8;
     });
   }
 });
@@ -210,8 +222,8 @@ $("#logOutBtn").click(
 );
 
 const searchProducts = async (term) => {
-  const url = `http://localhost:3000/api/products?&searchTerm=${term}
-`;
+  const url = `http://localhost:3000/api/products?searchTerm=${encodeURIComponent(term)}&pageSize=${elementCount}`;
+
   const response = await fetch(url);
   try {
     if (!response.ok) {
@@ -220,6 +232,7 @@ const searchProducts = async (term) => {
 
     const data = await response.json();
     return data.products;
+
   } catch (e) {
     console.log(e.message);
     $("#notFound").fadeIn(200, function () {
@@ -254,21 +267,20 @@ const createCard = (item) => {
 };
 
 const createCardItems = (products) => {
- 
+  if (products.length > 4) $("#more").removeClass("hidden");
   products.map((product) => {
-    // console.log(product);
     var parentDiv = $("<div></div>");
     parentDiv.css({
-      width: "290px",
-      height: "400px",
+      width: "250px",
+      height: "310px",
       display: "flex",
       "flex-direction": "column",
     });
 
     var childDiv = $("<div></div>");
     childDiv.css({
-      width: "290px",
-      height: "270px",
+      width: "250px",
+      height: "180px",
       "background-color": "#F5F5F5",
       "border-radius": "4px",
       display: "flex",
@@ -349,7 +361,14 @@ const createCardItems = (products) => {
   });
 };
 
-$("#viewMoreBtn").click(() => getProducts());
+
+
+$("#more").click(()=>{
+  elementCount+=4;
+  $("#searchInput").trigger($.Event("keydown", { key: "Enter" }));
+})
+
+
 
 getProducts();
 document.cookie = `access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N…jM1fQ.UYMejnEng_aifEy9RO7I_FNZYDCZ8r3VIiKUFVgeXaE', refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N…TM1fQ.y4jXku_JKGg1t7nHKlYHQT6mnxTeHbZ5v2z-IsUy07g`;
