@@ -1,11 +1,28 @@
+
+//Category
+
+var category = "";
+
+
+
+$("#tech").click(() => {
+  $("#productsDiv").html("");
+  category = (category==="" ? "tech" :""); 
+  getProducts();
+});
+
+
+
+// Explore
+
 const pageSize = 8;
 let currentPage = 1;
 
 const getProducts = async () => {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/products?pageSize=${pageSize}&page=${currentPage}`
-    );
+    const url =`http://localhost:3000/api/products?pageSize=${pageSize}&category=${category}`;
+    console.log(url);
+    const response = await fetch(url);
 
     if (!response.ok) throw new Error("Fetch failed");
 
@@ -124,6 +141,8 @@ function updateProducts(data) {
 
 $("#viewMoreBtn").click(() => getProducts());
 
+
+
 $("#profileBtn").click((event) => {
   const profileOptions = $("#profileOptions");
 
@@ -177,8 +196,8 @@ $("#searchInput").on("keydown", async function (event) {
   }
 });
 
-$("#searchInput").on("input",  ()=> {
-  elementCount=8;
+$("#searchInput").on("input", () => {
+  elementCount = 8;
 })
 
 let elementCount = 8;
@@ -188,8 +207,8 @@ $("#overLay").click((event) => {
     $("#overLay").fadeOut(200, function () {
       $(this).addClass("hidden");
       $("#body").removeClass("overflow-hidden");
-      $("#searchInput").val(""); 
-      elementCount=8;
+      $("#searchInput").val("");
+      elementCount = 8;
     });
   }
 });
@@ -363,8 +382,8 @@ const createCardItems = (products) => {
 
 
 
-$("#more").click(()=>{
-  elementCount+=4;
+$("#more").click(() => {
+  elementCount += 4;
   $("#searchInput").trigger($.Event("keydown", { key: "Enter" }));
 })
 
