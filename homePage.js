@@ -1,17 +1,48 @@
-
 //Category
 
 var category = "";
 
+let accessToken = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("accessToken="))
+  ?.split("=")[1];
 
+function detailsPage(id) {
+  const params = new URLSearchParams();
+    params.append('productId', id);
+    const queryString = params.toString();
+    const url = `http://127.0.0.1:5500/details.html?${queryString}`;
+    window.location = url
+}
+
+async function addBasket(id) {
+  try {
+    const response = await fetch("http://localhost:3000/api/baskets/add", {
+      method: "POST",
+      body: JSON.stringify({
+        productId: "67422392992589ea9af751ab",
+        quantity: 1,
+      }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (!response.ok) throw new Error(response.message);
+
+    const data = await response.json();
+    console.log(data);
+  } catch (e) {
+    console.log(e.message);
+  }
+}
 
 $("#tech").click(() => {
   $("#productsDiv").html("");
-  category = (category==="" ? "tech" :""); 
+  category = category === "" ? "tech" : "";
   getProducts();
 });
-
-
 
 // Explore
 
@@ -20,7 +51,7 @@ let currentPage = 1;
 
 const getProducts = async () => {
   try {
-    const url =`http://localhost:3000/api/products?pageSize=${pageSize}&category=${category}`;
+    const url = `http://localhost:3000/api/products?pageSize=${pageSize}&category=${category}`;
     console.log(url);
     const response = await fetch(url);
 
@@ -98,8 +129,10 @@ function updateProducts(data) {
         "border-bottom-right-radius": "4px",
         position: "absolute",
         "z-index": "1",
+        cursor: "pointer",
       })
       .text("Add to basket");
+    hoverDiv.click(() => addBasket(product._id));
 
     childDiv.append(img);
     childDiv.append(hoverDiv);
@@ -134,14 +167,13 @@ function updateProducts(data) {
     parentDiv.append(childDiv);
     parentDiv.append(title);
     parentDiv.append(price);
+    parentDiv.click(()=>{detailsPage(product._id)})
 
     $("#productsDiv").append(parentDiv);
   });
 }
 
 $("#viewMoreBtn").click(() => getProducts());
-
-
 
 $("#profileBtn").click((event) => {
   const profileOptions = $("#profileOptions");
@@ -198,7 +230,7 @@ $("#searchInput").on("keydown", async function (event) {
 
 $("#searchInput").on("input", () => {
   elementCount = 8;
-})
+});
 
 let elementCount = 8;
 
@@ -241,7 +273,9 @@ $("#logOutBtn").click(
 );
 
 const searchProducts = async (term) => {
-  const url = `http://localhost:3000/api/products?searchTerm=${encodeURIComponent(term)}&pageSize=${elementCount}`;
+  const url = `http://localhost:3000/api/products?searchTerm=${encodeURIComponent(
+    term
+  )}&pageSize=${elementCount}`;
 
   const response = await fetch(url);
   try {
@@ -251,7 +285,6 @@ const searchProducts = async (term) => {
 
     const data = await response.json();
     return data.products;
-
   } catch (e) {
     console.log(e.message);
     $("#notFound").fadeIn(200, function () {
@@ -287,19 +320,21 @@ const createCard = (item) => {
 
 const createCardItems = (products) => {
   if (products.length > 4) $("#more").removeClass("hidden");
+ 
   products.map((product) => {
+    // console.log(product);
     var parentDiv = $("<div></div>");
     parentDiv.css({
-      width: "250px",
-      height: "310px",
+      width: "290px",
+      height: "400px",
       display: "flex",
       "flex-direction": "column",
     });
 
     var childDiv = $("<div></div>");
     childDiv.css({
-      width: "250px",
-      height: "180px",
+      width: "290px",
+      height: "270px",
       "background-color": "#F5F5F5",
       "border-radius": "4px",
       display: "flex",
@@ -339,8 +374,10 @@ const createCardItems = (products) => {
         "border-bottom-right-radius": "4px",
         position: "absolute",
         "z-index": "1",
+        cursor: "pointer",
       })
       .text("Add to basket");
+    hoverDiv.click(() => addBasket(product._id));
 
     childDiv.append(img);
     childDiv.append(hoverDiv);
@@ -375,19 +412,31 @@ const createCardItems = (products) => {
     parentDiv.append(childDiv);
     parentDiv.append(title);
     parentDiv.append(price);
+    parentDiv.click(()=>{detailsPage(product._id)})
 
     $("#searchProducts").append(parentDiv);
   });
 };
 
-
-
 $("#more").click(() => {
   elementCount += 4;
   $("#searchInput").trigger($.Event("keydown", { key: "Enter" }));
-})
-
-
+});
 
 getProducts();
-document.cookie = `access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N…jM1fQ.UYMejnEng_aifEy9RO7I_FNZYDCZ8r3VIiKUFVgeXaE', refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N…TM1fQ.y4jXku_JKGg1t7nHKlYHQT6mnxTeHbZ5v2z-IsUy07g`;
+document.cookie = `accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N…TU5fQ.Dofc0XPgmq9x8cpZ781vFLmmPn2mepel8EybqV_xNJo`;
+
+// const signInRequest = async () => {
+//   const response = await fetch("http://localhost:3000/api/auth/login", {
+//     method: "POST",
+//     body: JSON.stringify({ email: "qasimov.vaqif@gmail.com", password: "123" }),
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//   });
+//   var data=await response.json()
+//   console.log(data)
+// };
+
+// signInRequest()
