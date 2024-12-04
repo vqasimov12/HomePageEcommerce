@@ -25,8 +25,6 @@ $("#furniture").click(() => {
   getProducts();
 });
 
-
-
 // Add to basket ; Details page
 
 const getAccessToken = () => {
@@ -47,7 +45,8 @@ function detailsPage(id) {
 
 async function addBasket(id) {
   let accessToken = getAccessToken();
-  console.log(accessToken);
+  // const encodedAccessToken = encodeURIComponent(accessToken);
+  // console.log(accessToken);
   if (accessToken !== "")
     try {
       const response = await fetch("http://localhost:3000/api/baskets/add", {
@@ -59,13 +58,14 @@ async function addBasket(id) {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`, // Ensure this is set correctly
         },
       });
       if (!response.ok) throw new Error(response.message);
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
+      return data;
     } catch (e) {
       console.log(e.message);
     }
@@ -80,7 +80,7 @@ const getProducts = async () => {
 
     if (category === "") {
       $("#viewMoreBtn").css("display", "inline-block");
-      console.log(currentPage);
+      // console.log(currentPage);
       url = `http://localhost:3000/api/products?pageSize=${pageSize}&page=${currentPage}`;
       const response = await fetch(url);
 
@@ -96,7 +96,6 @@ const getProducts = async () => {
         $("#viewMoreBtn").css("display", "none");
       }
     } else {
-
       $("#viewMoreBtn").css("display", "none");
       url = `http://localhost:3000/api/products?category=${category}`;
       const response = await fetch(url);
@@ -482,7 +481,7 @@ $("#more").click(() => {
 });
 
 getProducts();
-document.cookie = `accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N…TU5fQ.Dofc0XPgmq9x8cpZ781vFLmmPn2mepel8EybqV_xNJo`;
+document.cookie = `accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NGI2NzViNmJkMjc4ZTU5ZDMzN2YxNyIsImlhdCI6MTczMzMwNjU1MSwiZXhwIjoxNzMzMzA2ODUxfQ.pvrwD1sQ3SaeD286mUCzKIjcmg9osq_V1kDe2ftHPQs`;
 
 // const signInRequest = async () => {
 //   const response = await fetch("http://localhost:3000/api/auth/login", {
@@ -493,8 +492,21 @@ document.cookie = `accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3
 //       "Content-Type": "application/json",
 //     },
 //   });
-//   var data=await response.json()
-//   console.log(data)
+//   var data = await response.json();
 // };
 
-// signInRequest()
+// signInRequest();
+
+// const getALLBasket = async () => {
+//   accessToken=getAccessToken()
+//   let response = await fetch("http://localhost:3000/api/baskets/view", {
+//     method: "GET",
+//     headers: {
+//       Accept: "application/json",
+//       Authorization: `Bearer ${getAccessToken()}`,
+//     },
+//   });
+//   let data = await response.json();
+//   console.log(data);
+// };
+// getALLBasket()
