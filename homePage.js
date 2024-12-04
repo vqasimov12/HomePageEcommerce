@@ -1,6 +1,33 @@
 //Category
 
+const pageSize = 8;
+let currentPage = 1;
 var category = "";
+
+$("#tech").click(() => {
+  $("#productsDiv").html("");
+  category = category === "" ? "tech" : "";
+  currentPage = 1;
+  getProducts();
+});
+
+$("#fashion").click(() => {
+  $("#productsDiv").html("");
+  category = category === "" ? "fashion" : "";
+  currentPage = 1;
+  getProducts();
+});
+
+$("#furniture").click(() => {
+  $("#productsDiv").html("");
+  category = category === "" ? "furniture" : "";
+  currentPage = 1;
+  getProducts();
+});
+
+
+
+// Add to basket ; Details page
 
 const getAccessToken = () => {
   let accessToken = document.cookie
@@ -45,32 +72,39 @@ async function addBasket(id) {
   else window.location.href = "singIn.html";
 }
 
-$("#tech").click(() => {
-  $("#productsDiv").html("");
-  category = category === "" ? "tech" : "";
-  getProducts();
-});
-
 // Explore
-
-const pageSize = 8;
-let currentPage = 1;
 
 const getProducts = async () => {
   try {
-    const url = `http://localhost:3000/api/products?pageSize=${pageSize}&category=${category}`;
-    const response = await fetch(url);
+    let url = ``;
 
-    if (!response.ok) throw new Error("Fetch failed");
+    if (category === "") {
+      $("#viewMoreBtn").css("display", "inline-block");
+      console.log(currentPage);
+      url = `http://localhost:3000/api/products?pageSize=${pageSize}&page=${currentPage}`;
+      const response = await fetch(url);
 
-    const data = await response.json();
-    const totalPages = data.totalPages;
-    updateProducts(data);
+      if (!response.ok) throw new Error("Fetch failed!");
 
-    currentPage++;
+      const data = await response.json();
+      const totalPages = data.totalPages;
+      updateProducts(data);
 
-    if (currentPage > totalPages) {
+      currentPage++;
+
+      if (currentPage > totalPages) {
+        $("#viewMoreBtn").css("display", "none");
+      }
+    } else {
+
       $("#viewMoreBtn").css("display", "none");
+      url = `http://localhost:3000/api/products?category=${category}`;
+      const response = await fetch(url);
+
+      if (!response.ok) throw new Error("Fetch failed!");
+
+      const data = await response.json();
+      updateProducts(data);
     }
   } catch (error) {
     console.error(error);
@@ -183,6 +217,8 @@ function updateProducts(data) {
 
 $("#viewMoreBtn").click(() => getProducts());
 
+//Searchbar, Navbar
+
 $("#profileBtn").click((event) => {
   const profileOptions = $("#profileOptions");
 
@@ -215,8 +251,7 @@ $("#searchInput").on("keydown", async function (event) {
     if (searchTerm) {
       $("#searchedText").text(searchTerm);
       // $("#more").addClass("hidden");
-      if($("#more").hasClass("hidden"))
-        $("#more").removeClass("hidden");
+      if ($("#more").hasClass("hidden")) $("#more").removeClass("hidden");
       $("#overLay").removeClass("hidden").fadeIn(200);
       $("#body").addClass("overflow-hidden");
 
@@ -287,7 +322,6 @@ const searchProducts = async (term) => {
   const url = `http://localhost:3000/api/products?searchTerm=${encodeURIComponent(
     term
   )}&pageSize=${elementCount}`;
-  
 
   try {
     const response = await fetch(url);
@@ -301,9 +335,9 @@ const searchProducts = async (term) => {
       $("#notFound").fadeIn(200, function () {
         $(this).removeClass("hidden");
       });
-      
+
       $("#more").addClass("hidden");
-      return []; 
+      return [];
     }
 
     const temp = await fetch(
@@ -326,11 +360,10 @@ const searchProducts = async (term) => {
     $("#notFound").fadeIn(200, function () {
       $(this).removeClass("hidden");
     });
-    $("#more").addClass("hidden"); 
+    $("#more").addClass("hidden");
     return [];
   }
 };
-
 
 const createCardItems = (products) => {
   products.map((product) => {
