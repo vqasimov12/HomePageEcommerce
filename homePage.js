@@ -58,7 +58,7 @@ async function addBasket(id) {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`, // Ensure this is set correctly
+          Authorization: `Bearer ${accessToken}`,
         },
       });
       if (!response.ok) throw new Error(response.message);
@@ -114,7 +114,6 @@ function updateProducts(data) {
   const products = data.products;
 
   products.map((product) => {
-    // console.log(product);
     var parentDiv = $("<div></div>");
     parentDiv.css({
       width: "290px",
@@ -249,9 +248,8 @@ $("#searchInput").on("keydown", async function (event) {
     const searchTerm = $("#searchInput").val().trim();
     if (searchTerm) {
       $("#searchedText").text(searchTerm);
-      // $("#more").addClass("hidden");
       if ($("#more").hasClass("hidden")) $("#more").removeClass("hidden");
-      $("#overLay").removeClass("hidden").fadeIn(200);
+      $("#overLay").removeClass("hidden").fadeIn(2);
       $("#body").addClass("overflow-hidden");
 
       const result = await searchProducts(searchTerm);
@@ -259,14 +257,14 @@ $("#searchInput").on("keydown", async function (event) {
       if (result === undefined) $("#more").addClass("hidden");
 
       if (result.length !== 0) {
-        $("#notFound").fadeOut(200, function () {
+        $("#notFound").fadeOut(2, function () {
           $(this).addClass("hidden");
           window.scrollTo({ top: 0, behavior: "smooth" });
 
           createCardItems(result);
         });
       } else {
-        $("#notFound").removeClass("hidden").fadeIn(200);
+        $("#notFound").removeClass("hidden").fadeIn(0);
       }
     } else {
       console.log("Input is empty!");
@@ -282,7 +280,7 @@ let elementCount = 4;
 
 $("#overLay").click((event) => {
   if (event.target === event.currentTarget) {
-    $("#overLay").fadeOut(200, function () {
+    $("#overLay").fadeOut(2, function () {
       $(this).addClass("hidden");
       $("#body").removeClass("overflow-hidden");
       $("#searchInput").val("");
@@ -331,7 +329,7 @@ const searchProducts = async (term) => {
     const data = await response.json();
 
     if (data.products.length === 0) {
-      $("#notFound").fadeIn(200, function () {
+      $("#notFound").fadeIn(2, function () {
         $(this).removeClass("hidden");
       });
 
@@ -356,7 +354,7 @@ const searchProducts = async (term) => {
     return data.products;
   } catch (e) {
     console.log(e.message);
-    $("#notFound").fadeIn(200, function () {
+    $("#notFound").fadeIn(2, function () {
       $(this).removeClass("hidden");
     });
     $("#more").addClass("hidden");
@@ -481,21 +479,22 @@ $("#more").click(() => {
 });
 
 getProducts();
-document.cookie = `accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NGI2NzViNmJkMjc4ZTU5ZDMzN2YxNyIsImlhdCI6MTczMzMwNjU1MSwiZXhwIjoxNzMzMzA2ODUxfQ.pvrwD1sQ3SaeD286mUCzKIjcmg9osq_V1kDe2ftHPQs`;
+document.cookie = `accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NGI2NzViNmJkMjc4ZTU5ZDMzN2YxNyIsImlhdCI6MTczMzMxNTkzNywiZXhwIjoxNzMzMzE2MjM3fQ.jFX-NlrQEzQ2k8cCJgrFnwrOVW54XdoHtIvzo-kBusc`;
 
-// const signInRequest = async () => {
-//   const response = await fetch("http://localhost:3000/api/auth/login", {
-//     method: "POST",
-//     body: JSON.stringify({ email: "qasimov.vaqif@gmail.com", password: "123" }),
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//   });
-//   var data = await response.json();
-// };
+const signInRequest = async () => {
+  const response = await fetch("http://localhost:3000/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email: "qasimov.vaqif@gmail.com", password: "123" }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+  var data = await response.json();
+  console.log(data.accessToken);
+};
 
-// signInRequest();
+signInRequest();
 
 // const getALLBasket = async () => {
 //   accessToken=getAccessToken()
