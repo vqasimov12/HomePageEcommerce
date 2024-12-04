@@ -2,40 +2,47 @@
 
 var category = "";
 
-let accessToken = document.cookie
-  .split("; ")
-  .find((row) => row.startsWith("accessToken="))
-  ?.split("=")[1];
+const getAccessToken = () => {
+  let accessToken = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("accessToken="))
+    ?.split("=")[1];
+  return accessToken ?? "";
+};
 
 function detailsPage(id) {
   const params = new URLSearchParams();
-    params.append('productId', id);
-    const queryString = params.toString();
-    const url = `http://127.0.0.1:5500/details.html?${queryString}`;
-    window.location = url
+  params.append("productId", id);
+  const queryString = params.toString();
+  const url = `http://127.0.0.1:5500/details.html?${queryString}`;
+  window.location = url;
 }
 
 async function addBasket(id) {
-  try {
-    const response = await fetch("http://localhost:3000/api/baskets/add", {
-      method: "POST",
-      body: JSON.stringify({
-        productId: "67422392992589ea9af751ab",
-        quantity: 1,
-      }),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    if (!response.ok) throw new Error(response.message);
+  let accessToken = getAccessToken();
+  console.log(accessToken);
+  if (accessToken !== "")
+    try {
+      const response = await fetch("http://localhost:3000/api/baskets/add", {
+        method: "POST",
+        body: JSON.stringify({
+          productId: id,
+          quantity: 1,
+        }),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (!response.ok) throw new Error(response.message);
 
-    const data = await response.json();
-    console.log(data);
-  } catch (e) {
-    console.log(e.message);
-  }
+      const data = await response.json();
+      console.log(data);
+    } catch (e) {
+      console.log(e.message);
+    }
+  else window.location.href = "singIn.html";
 }
 
 $("#tech").click(() => {
@@ -52,7 +59,6 @@ let currentPage = 1;
 const getProducts = async () => {
   try {
     const url = `http://localhost:3000/api/products?pageSize=${pageSize}&category=${category}`;
-    console.log(url);
     const response = await fetch(url);
 
     if (!response.ok) throw new Error("Fetch failed");
@@ -74,8 +80,6 @@ const getProducts = async () => {
 function updateProducts(data) {
   const products = data.products;
 
-  // console.log(products);
-
   products.map((product) => {
     // console.log(product);
     var parentDiv = $("<div></div>");
@@ -84,6 +88,7 @@ function updateProducts(data) {
       height: "400px",
       display: "flex",
       "flex-direction": "column",
+      cursor: "pointer",
     });
 
     var childDiv = $("<div></div>");
@@ -132,8 +137,10 @@ function updateProducts(data) {
         cursor: "pointer",
       })
       .text("Add to basket");
-    hoverDiv.click(() => addBasket(product._id));
-
+    hoverDiv.click((event) => {
+      event.stopPropagation();
+      addBasket(product._id);
+    });
     childDiv.append(img);
     childDiv.append(hoverDiv);
     childDiv.mouseenter(() => {
@@ -167,8 +174,9 @@ function updateProducts(data) {
     parentDiv.append(childDiv);
     parentDiv.append(title);
     parentDiv.append(price);
-    parentDiv.click(()=>{detailsPage(product._id)})
-
+    parentDiv.on("click", () => {
+      detailsPage(product._id);
+    });
     $("#productsDiv").append(parentDiv);
   });
 }
@@ -206,12 +214,16 @@ $("#searchInput").on("keydown", async function (event) {
     const searchTerm = $("#searchInput").val().trim();
     if (searchTerm) {
       $("#searchedText").text(searchTerm);
+      // $("#more").addClass("hidden");
+      if($("#more").hasClass("hidden"))
+        $("#more").removeClass("hidden");
       $("#overLay").removeClass("hidden").fadeIn(200);
       $("#body").addClass("overflow-hidden");
-      $("#more").addClass("hidden");
 
       const result = await searchProducts(searchTerm);
       $("#searchProducts").html("");
+      if (result === undefined) $("#more").addClass("hidden");
+
       if (result.length !== 0) {
         $("#notFound").fadeOut(200, function () {
           $(this).addClass("hidden");
@@ -229,10 +241,10 @@ $("#searchInput").on("keydown", async function (event) {
 });
 
 $("#searchInput").on("input", () => {
-  elementCount = 8;
+  elementCount = 4;
 });
 
-let elementCount = 8;
+let elementCount = 4;
 
 $("#overLay").click((event) => {
   if (event.target === event.currentTarget) {
@@ -240,101 +252,103 @@ $("#overLay").click((event) => {
       $(this).addClass("hidden");
       $("#body").removeClass("overflow-hidden");
       $("#searchInput").val("");
-      elementCount = 8;
+      elementCount = 4;
     });
   }
 });
 
 $("#myProfileLink").click(() => {
-  if (document.cookie.includes("access_token="))
+  if (document.cookie.includes("accessToken="))
     window.location.href = "/profile.html";
-  else window.location.href = "/signup.html";
+  else window.location.href = "/signIn.html";
 });
 
 $("#myAccount").click(() => {
-  if (document.cookie.includes("access_token="))
+  if (document.cookie.includes("accessToken="))
     window.location.href = "/profile.html";
-  else window.location.href = "/signup.html";
+  else window.location.href = "/signIn.html";
 });
 
 $("#shoppingCartLink").click(() => {
-  if (document.cookie.includes("access_token="))
+  if (document.cookie.includes("accessToken="))
     window.location.href = "/basket.html";
-  else window.location.href = "/signup.html";
+  else window.location.href = "/signIn.html";
 });
 $("#basketLink").click(() => {
-  if (document.cookie.includes("access_token="))
+  if (document.cookie.includes("accessToken="))
     window.location.href = "/basket.html";
-  else window.location.href = "/signup.html";
+  else window.location.href = "/signIn.html";
 });
 
 $("#logOutBtn").click(
-  () => (document.cookie = "access_token=; path=/; max-age=0")
+  () => (document.cookie = "accessToken=; path=/; max-age=0")
 );
-
 const searchProducts = async (term) => {
   const url = `http://localhost:3000/api/products?searchTerm=${encodeURIComponent(
     term
   )}&pageSize=${elementCount}`;
+  
 
-  const response = await fetch(url);
   try {
+    const response = await fetch(url);
     if (!response.ok) {
-      throw new Error("Failed to fetch product data. Please try again later");
+      throw new Error("Failed to fetch product data. Please try again later.");
     }
 
     const data = await response.json();
+
+    if (data.products.length === 0) {
+      $("#notFound").fadeIn(200, function () {
+        $(this).removeClass("hidden");
+      });
+      
+      $("#more").addClass("hidden");
+      return []; 
+    }
+
+    const temp = await fetch(
+      `http://localhost:3000/api/products?searchTerm=${encodeURIComponent(
+        term
+      )}&pageSize=${50}`
+    );
+    if (!temp.ok) {
+      throw new Error("Failed to fetch product data. Please try again later.");
+    }
+
+    const tempData = await temp.json();
+
+    if (data.products.length >= tempData.products.length) {
+      $("#more").addClass("hidden");
+    }
     return data.products;
   } catch (e) {
     console.log(e.message);
     $("#notFound").fadeIn(200, function () {
       $(this).removeClass("hidden");
     });
+    $("#more").addClass("hidden"); 
+    return [];
   }
 };
 
-const createCard = (item) => {
-  const card = $("<div>").addClass("card w-[270px] h-[320px] gap-4 mt-[60px]");
-
-  const secondDiv = $("<div>").addClass(
-    "p-[5px] rounded-[4px] flex w-[270px] bg-[#f5f5f5] h-[220px] items-center justify-center"
-  );
-  const image = $("<img>")
-    .addClass(" h-[160px] object-cover rounded-md")
-    .attr("src", item.gallery[0]);
-  secondDiv.append(image);
-  card.append(secondDiv);
-  const title = $("<h2>")
-    .addClass("font-poppins text-base font-medium mt-4 leading-6 text-left")
-    .text(item.title);
-  card.append(title);
-
-  const price = $("<p>")
-    .addClass(
-      "font-poppins text-base font-medium mt-2 leading-6 text-left text-[#DB4444]"
-    )
-    .text(`$${item.price}`);
-  card.append(price);
-  $("#searchProducts").append(card);
-};
 
 const createCardItems = (products) => {
-  if (products.length > 4) $("#more").removeClass("hidden");
- 
   products.map((product) => {
     // console.log(product);
     var parentDiv = $("<div></div>");
     parentDiv.css({
-      width: "290px",
-      height: "400px",
+      width: "220px",
+      height: "350px",
       display: "flex",
       "flex-direction": "column",
+      cursor: "pointer",
+      gap: "5px",
     });
 
     var childDiv = $("<div></div>");
     childDiv.css({
-      width: "290px",
-      height: "270px",
+      width: "200px",
+      height: "150px",
       "background-color": "#F5F5F5",
       "border-radius": "4px",
       display: "flex",
@@ -377,8 +391,10 @@ const createCardItems = (products) => {
         cursor: "pointer",
       })
       .text("Add to basket");
-    hoverDiv.click(() => addBasket(product._id));
-
+    hoverDiv.click((event) => {
+      event.stopPropagation();
+      addBasket(product._id);
+    });
     childDiv.append(img);
     childDiv.append(hoverDiv);
     childDiv.mouseenter(() => {
@@ -395,6 +411,8 @@ const createCardItems = (products) => {
         "font-weight": "500",
         "font-family": "poppins",
         "padding-top": "16px",
+        width: "200px",
+        height: "55px",
       })
       .text(product.title);
 
@@ -412,8 +430,9 @@ const createCardItems = (products) => {
     parentDiv.append(childDiv);
     parentDiv.append(title);
     parentDiv.append(price);
-    parentDiv.click(()=>{detailsPage(product._id)})
-
+    parentDiv.on("click", () => {
+      detailsPage(product._id);
+    });
     $("#searchProducts").append(parentDiv);
   });
 };
@@ -421,6 +440,12 @@ const createCardItems = (products) => {
 $("#more").click(() => {
   elementCount += 4;
   $("#searchInput").trigger($.Event("keydown", { key: "Enter" }));
+  $("#searchProducts").animate(
+    {
+      scrollTop: $("#searchProducts")[0].scrollHeight,
+    },
+    500
+  );
 });
 
 getProducts();
