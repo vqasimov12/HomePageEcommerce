@@ -213,7 +213,14 @@ function updateProducts(data) {
   });
 }
 
-$("#viewMoreBtn").click(() => getProducts());
+$("#viewMoreBtn").click(() => {
+  getProducts();
+  $("#arrowBtn").removeClass("invisible").addClass("visible");
+});
+ 
+$("#arrowBtn").click(() => {
+  location.reload()
+})
 
 //Searchbar, Navbar
 
